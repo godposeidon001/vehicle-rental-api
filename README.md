@@ -4,7 +4,7 @@ A RESTful backend API for managing vehicle rentals with role-based access contro
 Built using Node.js, TypeScript, Express, PostgreSQL (NeonDB), and JWT authentication.
 
 ## 🌐 Live URL
-[https://your-live-api-url.com](https://)
+[Live URL](https://syed-vehicle-rental.vercel.app/)
 
 ## 📦 Features
 - User authentication (JWT)
