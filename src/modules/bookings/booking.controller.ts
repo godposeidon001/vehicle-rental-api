@@ -28,4 +28,26 @@ export class BookingController {
       next(err);
     }
   }
+
+  static async updateStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const currentUser = req.user!;
+      const bookingId = Number(req.params.bookingId);
+      const updated = await BookingService.updateBookingStatus(
+        currentUser,
+        bookingId,
+        req.body
+      );
+
+      const status = req.body?.status as string | undefined;
+
+      const message = status === "cancelled" ? "Booking cancelled successfully" : status === "returned" ? "Booking marked as returned. Vehicle is now available." : "Booking updated successfully";
+
+      res
+        .status(200)
+        .json(successResponse(message, updated));
+    } catch (err) {
+      next(err);
+    }
+  }
 }

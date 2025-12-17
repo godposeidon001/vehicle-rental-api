@@ -8,4 +8,6 @@ router.post("/", requireAuth, BookingController.create);
 
 router.get("/", requireAuth, BookingController.findAll);
 
+router.put("/:bookingId", requireAuth, BookingController.updateStatus);
+
 export const bookingRoutes = router;

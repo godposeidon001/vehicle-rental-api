@@ -192,4 +192,103 @@ export class BookingService {
       return result.rows;
     }
   }
+
+  static async updateBookingStatus(
+    currentUser: AuthUserPayload,
+    bookingId: number,
+    input: UpdateBookingInput
+  ) {
+    const { status } = input;
+
+    const { rows } = await db.query(`SELECT * FROM bookings WHERE id = $1`, [
+      bookingId,
+    ]);
+    const booking = rows[0];
+    if (!booking) {
+      throw new ApiError(404, "Booking not found");
+    }
+
+    if (booking.status !== "active") {
+      throw new ApiError(400, "Only active bookings can be updated");
+    }
+
+    const today = new Date();
+    const todayDateOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+
+    if (currentUser.role === "customer") {
+      if (booking.customer_id !== currentUser.id) {
+        throw new ApiError(403, "You can only modify your own bookings");
+      }
+
+      if (status !== "cancelled") {
+        throw new ApiError(400, "Customers can only cancel their bookings");
+      }
+
+      const startDateOnly = new Date(booking.rent_start_date);
+      if (startDateOnly <= todayDateOnly) {
+        throw new ApiError(
+          400,
+          "Cannot cancel booking that has already started"
+        );
+      }
+    }
+
+    if (currentUser.role === "admin") {
+      if (status !== "returned") {
+        throw new ApiError(400, "Admins can only mark bookings as returned");
+      }
+    }
+
+    const client = await db.connect();
+    try {
+      await client.query("BEGIN");
+
+      const updatedResult = await client.query(
+        `UPDATE bookings
+       SET status = $1,
+           updated_at = NOW()
+       WHERE id = $2
+       RETURNING
+         id,
+         customer_id,
+         vehicle_id,
+         rent_start_date::text AS rent_start_date,
+         rent_end_date::text   AS rent_end_date,
+         total_price::float8   AS total_price,
+         status`,
+        [status, bookingId]
+      );
+
+      const updatedBooking = updatedResult.rows[0];
+
+      await client.query(
+        `UPDATE vehicles
+       SET availability_status = 'available',
+           updated_at = NOW()
+       WHERE id = $1`,
+        [booking.vehicle_id]
+      );
+
+      await client.query("COMMIT");
+      
+      if (status === "returned") {
+        return {
+          ...updatedBooking,
+          vehicle: {
+            availability_status: "available",
+          },
+        };
+      }
+      return updatedBooking;
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
 }
