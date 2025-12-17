@@ -70,4 +70,20 @@ export class UserService {
     );
     return result.rows[0];
   }
+
+  static async deleteUser(userId: number) {
+    const activeBookings = await db.query(
+      `SELECT id FROM bookings
+       WHERE customer_id = $1 AND status = 'active'`,
+      [userId]
+    );
+    if (activeBookings.rows.length > 0) {
+      throw new ApiError(400, "Cannot delete user with active bookings");
+    }
+
+    const result = await db.query("DELETE FROM users WHERE id = $1", [userId]);
+    if (result.rowCount === 0) {
+      throw new ApiError(404, "User not found");
+    }
+  }
 }

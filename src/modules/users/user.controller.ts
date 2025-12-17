@@ -38,4 +38,17 @@ export class UserController {
       next(err);
     }
   }
+
+  static async remove(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params.userId);
+      await UserService.deleteUser(id);
+      res.status(200).json({
+        success: true,
+        message: "User deleted successfully",
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

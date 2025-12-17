@@ -10,4 +10,6 @@ router.get("/:userId", requireAuth, UserController.getById);
 
 router.put("/:userId", requireAuth, UserController.update);
 
+router.delete('/:userId', requireAuth, requireRole('admin'), UserController.remove);
+
 export const userRoutes = router;

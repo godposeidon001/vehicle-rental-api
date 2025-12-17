@@ -12,4 +12,6 @@ router.get("/:vehicleId", VehicleController.findById);
 
 router.put("/:vehicleId", requireAuth, requireRole("admin"), VehicleController.update);
 
+router.delete('/:vehicleId', requireAuth, requireRole('admin'), VehicleController.remove);
+
 export const vehicleRoutes = router;

@@ -101,4 +101,21 @@ export class VehicleService {
     );
     return result.rows[0];
   }
+
+  static async deleteVehicle(id: number) {
+    const activeBookings = await db.query(
+      `SELECT id FROM bookings
+       WHERE vehicle_id = $1 AND status = 'active'`,
+      [id]
+    );
+    if (activeBookings.rows.length > 0) {
+      throw new ApiError(400, "Cannot delete vehicle with active bookings");
+    }
+
+    const result = await db.query("DELETE FROM vehicles WHERE id = $1", [id]);
+
+    if (result.rowCount === 0) {
+      throw new ApiError(404, "Vehicle not found");
+    }
+  }
 }
