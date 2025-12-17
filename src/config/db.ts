@@ -32,6 +32,7 @@ export async function initDB() {
       registration_number VARCHAR(50) NOT NULL UNIQUE,
       daily_rent_price NUMERIC(10,2) NOT NULL
         CHECK (daily_rent_price > 0),
+      availability_status VARCHAR(20) NOT NULL DEFAULT 'available',  
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
