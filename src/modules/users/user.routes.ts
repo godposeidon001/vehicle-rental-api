@@ -4,11 +4,10 @@ import { UserController } from "./user.controller";
 
 const router = Router();
 
-router.get('/', requireAuth, requireRole('admin'), UserController.getAll);
+router.get("/", requireAuth, requireRole("admin"), UserController.getAll);
 
-router.get('/:userId', requireAuth, UserController.getById);
+router.get("/:userId", requireAuth, UserController.getById);
 
-router.put('/:userId', requireAuth, UserController.update);
+router.put("/:userId", requireAuth, UserController.update);
 
-
-export const userRoutes = router
+export const userRoutes = router;

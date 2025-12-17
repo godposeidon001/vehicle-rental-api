@@ -3,5 +3,5 @@ export function successResponse<T>(message: string, data: T) {
     success: true,
     message,
     data,
-  }
+  };
 }

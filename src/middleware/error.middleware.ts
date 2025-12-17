@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from 'express'
-import { ApiError } from '../utils/ApiError'
+import { NextFunction, Request, Response } from "express";
+import { ApiError } from "../utils/ApiError";
 
 export function errorHandler(
   err: ApiError | Error,
@@ -7,12 +7,12 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ) {
-  const statusCode = (err as ApiError).statusCode || 500
-  const message = err.message || 'Internal server error'
+  const statusCode = (err as ApiError).statusCode || 500;
+  const message = err.message || "Internal server error";
 
   res.status(statusCode).json({
     success: false,
     message,
     errors: (err as ApiError).errors || message,
-  })
+  });
 }

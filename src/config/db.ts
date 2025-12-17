@@ -1,12 +1,12 @@
-import {Pool} from 'pg';
-import {env} from './env';
+import { Pool } from "pg";
+import { env } from "./env";
 
 export const db = new Pool({
-    connectionString:env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized:false,
-    },
-})
+  connectionString: env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 export async function initDB() {
   await db.query(`
@@ -75,7 +75,7 @@ export async function initDB() {
   `);
 }
 
-db.on('error', (err) => {
-    console.error("Unexptec DB error", err)
-    process.exit(1)
-})
+db.on("error", (err) => {
+  console.error("Unexptec DB error", err);
+  process.exit(1);
+});
